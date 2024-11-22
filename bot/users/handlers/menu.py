@@ -25,7 +25,7 @@ async def cmd_start(message: Message, session: AsyncSession):
             values = UserModel(telegram_id=user_id)
             await UserDAO.add(session=session, values=values)
             await message.answer('Hello')
-            await cb_menu(message)
+            await start_menu(message)
 
     except Exception as e:
         logger.error(f"Ошибка при выполнении команды /start для пользователя {user_id}: {e}")
@@ -56,6 +56,13 @@ async def cmd_menu(message: Message, session: AsyncSession):
 
 async def cb_menu(message: Message):
     await message.edit_text(
+        "Выберите действие",
+        reply_markup=menu_keyboard()
+    )
+
+
+async def start_menu(message: Message):
+    await message.answer(
         "Выберите действие",
         reply_markup=menu_keyboard()
     )
