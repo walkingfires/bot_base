@@ -7,3 +7,4 @@ python-dateutil~=2.9.0.post0
 pydantic-settings~=2.6.1
 alembic~=1.14.0
 asyncpg~=0.30.0
+greenlet~=3.1.1
