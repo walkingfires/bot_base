@@ -15,17 +15,20 @@ async def cb_wiki(message: Message, session: AsyncSession, page: int = 1):
     user_id = message.from_user.id
     try:
         pages_list = np.arange(1, np.ceil(await ArticleDAO.count(session=session) / 5) + 1, dtype=int)
-
         pages = await ArticleDAO.paginate(session=session, page=page, page_size=5)
-        pages_data = [ArticleModel.model_validate(i).model_dump() for i in pages]
 
-        await message.edit_text(
-            "Выберите article",
-            reply_markup=wiki_keyboard(pages_data=pages_data,
-                                       left_page=pages_list[page - 2],
-                                       current_page=page,
-                                       right_page=pages_list[page % len(pages_list)])
-        )
+        if pages:
+            pages_data = [ArticleModel.model_validate(i).model_dump() for i in pages]
+
+            await message.edit_text(
+                "Выберите article",
+                reply_markup=wiki_keyboard(pages_data=pages_data,
+                                           left_page=pages_list[page - 2],
+                                           current_page=page,
+                                           right_page=pages_list[page % len(pages_list)])
+            )
+        else:
+            return
 
     except Exception as e:
         logger.error(f"Ошибка при выполнении команды /wiki для пользователя {user_id}: {e}")
@@ -38,6 +41,7 @@ async def cb_wiki_page(message: Message, session: AsyncSession, page_data: Artic
     user_id = message.from_user.id
     try:
         article_info = await ArticleDAO.find_one_or_none_by_id(session=session, data_id=page_data.article_id)
+
         if article_info:
             article = ArticleModel.model_validate(article_info).model_dump()
             if article['link_bool']:
@@ -50,7 +54,9 @@ async def cb_wiki_page(message: Message, session: AsyncSession, page_data: Artic
                     f"{article['name']}\n{article['text']}",
                     reply_markup=wiki_page_keyboard(current_page=page_data.page)
                 )
-        # TODO: if else hole
+        else:
+            return
+
     except Exception as e:
         logger.error(f"Ошибка при выполнении команды callback wiki_page для пользователя {user_id}: {e}")
         await message.edit_reply_markup()
