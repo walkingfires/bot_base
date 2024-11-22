@@ -1,0 +1,8 @@
+loguru~=0.7.2
+pydantic~=2.9.2
+SQLAlchemy~=2.0.36
+aiogram~=3.15.0
+numpy~=1.26.3
+python-dateutil~=2.9.0.post0
+pydantic-settings~=2.6.1
+alembic~=1.14.0
